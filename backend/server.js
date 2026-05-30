@@ -7,6 +7,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/registrations', require('./routes/registrations'));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

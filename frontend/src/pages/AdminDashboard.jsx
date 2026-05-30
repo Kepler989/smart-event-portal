@@ -8,11 +8,60 @@ export default function AdminDashboard() {
     const [formData, setFormData] = useState({
         title: '', description: '', date: '', location: '', capacity: ''
     });
+    const [editingEventId, setEditingEventId] = useState(null); // Track which row is being edited
+    const [editFormData, setEditFormData] = useState({          // Hold temporary edit inputs
+        title: '', description: '', date: '', location: '', capacity: ''
+    });
 
     const fetchEvents = async () => {
         const res = await axios.get('http://localhost:5000/api/events');
         setEvents(res.data);
     };
+
+    const handleDelete = async (eventId) => {
+    if (window.confirm("Are you sure you want to delete this event?")) {
+        try {
+            // Sends the DELETE request to our backend route
+            await axios.delete(`http://localhost:5000/api/events/${eventId}`);
+            alert("Event deleted successfully!");
+            fetchEvents(); // Refresh the table automatically
+        } catch (err) {
+            console.error("Error deleting event:", err);
+            alert("Failed to delete event.");
+        }
+    }
+};
+// Triggered when the user clicks "Edit" on a row
+const startEditing = (event) => {
+    setEditingEventId(event._id);
+    setEditFormData({
+        title: event.title,
+        description: event.description,
+        date: event.date.split('T')[0], // Formats database date to YYYY-MM-DD for the input field
+        location: event.location,
+        capacity: event.capacity
+    });
+};
+
+// Triggered when typing into the edit inputs
+const handleEditChange = (e) => {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+};
+
+// Triggered when clicking "Save"
+const handleEditSubmit = async (e, eventId) => {
+    e.preventDefault();
+    try {
+        // Make the PUT request to the backend route we created earlier
+        await axios.put(`http://localhost:5000/api/events/${eventId}`, editFormData);
+        alert("Event updated successfully!");
+        setEditingEventId(null); // Close the editing mode
+        fetchEvents();           // Refresh the table numbers
+    } catch (err) {
+        console.error("Error updating event:", err);
+        alert("Failed to update event.");
+    }
+};
 
     useEffect(() => {
         fetchEvents();
@@ -68,13 +117,56 @@ export default function AdminDashboard() {
                     <tbody>
                         {events.map(event => (
                             <tr key={event._id} className="border-b dark:border-gray-700">
-                                <td className="p-4">{event.title}</td>
-                                <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
-                                <td className="p-4">{event.registeredCount} / {event.capacity}</td>
-                                <td className="p-4">
-                                    <button className="text-blue-500 hover:underline mr-4">Edit</button>
-                                    <button className="text-red-500 hover:underline">Delete</button>
-                                </td>
+                                {editingEventId === event._id ? (
+                                    // --- EDITABLE ROW VIEW ---
+                                    <>
+                                        <td className="p-2">
+                                            <input type="text" name="title" value={editFormData.title} onChange={handleEditChange} className="w-full p-1 border rounded text-black text-sm" required />
+                                        </td>
+                                        <td className="p-2">
+                                            <input type="date" name="date" value={editFormData.date} onChange={handleEditChange} className="w-full p-1 border rounded text-black text-sm" required />
+                                        </td>
+                                        <td className="p-2">
+                                            <span className="text-sm gray-500">{event.registeredCount} / </span>
+                                            <input type="number" name="capacity" value={editFormData.capacity} onChange={handleEditChange} className="w-16 p-1 border rounded text-black text-sm inline" required />
+                                        </td>
+                                        <td className="p-4 flex space-x-2">
+                                            <button 
+                                                onClick={(e) => handleEditSubmit(e, event._id)} 
+                                                className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                                            >
+                                                Save
+                                            </button>
+                                            <button 
+                                                onClick={() => setEditingEventId(null)} 
+                                                className="bg-gray-500 text-white px-3 py-1 rounded text-xs hover:bg-gray-600"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </td>
+                                    </>
+                                ) : (
+                                    // --- STANDARD READ-ONLY ROW VIEW ---
+                                    <>
+                                        <td className="p-4 font-medium">{event.title}</td>
+                                        <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
+                                        <td className="p-4">{event.registeredCount} / {event.capacity}</td>
+                                        <td className="p-4">
+                                            <button 
+                                                onClick={() => startEditing(event)} 
+                                                className="text-blue-500 hover:underline mr-4 font-semibold"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(event._id)} 
+                                                className="text-red-500 hover:underline font-semibold"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </>
+                                )}
                             </tr>
                         ))}
                     </tbody>
