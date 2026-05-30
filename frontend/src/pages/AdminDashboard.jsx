@@ -81,6 +81,30 @@ const handleEditSubmit = async (e, eventId) => {
             alert("Failed to create event. Are you logged in?");
         }
     };
+    const handleExportCSV = async (eventId, eventTitle) => {
+        try {
+            // We must specify 'blob' so Axios knows it is receiving a file, not text
+            const res = await axios.get(`http://localhost:5000/api/export/events/${eventId}/csv`, {
+                responseType: 'blob'
+            });
+            
+            // Create a hidden link, click it to download the file, and remove it
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // Clean up the title so it makes a good file name
+            const safeTitle = eventTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            link.setAttribute('download', `${safeTitle}_attendees.csv`);
+            
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (err) {
+            console.error("Error exporting CSV:", err);
+            alert("Failed to export CSV. Make sure there are registered attendees first!");
+        }
+    };
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -151,10 +175,18 @@ const handleEditSubmit = async (e, eventId) => {
                                         <td className="p-4 font-medium">{event.title}</td>
                                         <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
                                         <td className="p-4">{event.registeredCount} / {event.capacity}</td>
-                                        <td className="p-4">
+                                        <td className="p-4 flex flex-wrap gap-3 items-center">
+                                            <button 
+                                                onClick={() => handleExportCSV(event._id, event.title)} 
+                                                className="text-green-600 hover:underline font-semibold"
+                                                disabled={event.registeredCount === 0}
+                                                title={event.registeredCount === 0 ? "No attendees to export" : "Download CSV"}
+                                            >
+                                                CSV
+                                            </button>
                                             <button 
                                                 onClick={() => startEditing(event)} 
-                                                className="text-blue-500 hover:underline mr-4 font-semibold"
+                                                className="text-blue-500 hover:underline font-semibold"
                                             >
                                                 Edit
                                             </button>

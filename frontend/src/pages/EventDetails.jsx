@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function EventDetails() {
-    const { id } = useParams(); // Get the event ID from the URL
+    const { id } = useParams();
     const navigate = useNavigate();
     
+    const [qrCode, setQrCode] = useState(null);
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({ attendeeName: '', attendeeEmail: '' });
@@ -33,14 +34,19 @@ export default function EventDetails() {
     const handleRegister = async (e) => {
         e.preventDefault();
         setMessage({ text: '', type: '' }); // Clear previous messages
+        setQrCode(null); // Clear previous QR code if registering another person
 
         try {
-            await axios.post('http://localhost:5000/api/registrations', {
+            const res = await axios.post('http://localhost:5000/api/registrations', {
                 eventId: id,
                 ...formData
             });
-            
-            setMessage({ text: 'Successfully registered! Check your email for details.', type: 'success' });
+
+            // DEBUG LOG: Check your browser console to verify the data is here
+            console.log("Server Response:", res.data);
+
+            setMessage({ text: 'Successfully registered!', type: 'success' });
+            setQrCode(res.data.ticketQR); // Save the QR code from the backend
             setFormData({ attendeeName: '', attendeeEmail: '' }); // Reset form
             
             // Update local event state to reflect new registration count
@@ -87,9 +93,25 @@ export default function EventDetails() {
                 <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg border dark:border-gray-600">
                     <h2 className="text-2xl font-semibold mb-6">Register for this Event</h2>
                     
+                    {/* The new, combined Message & QR Code Box */}
                     {message.text && (
-                        <div className={`p-3 mb-4 rounded ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                            {message.text}
+                        <div className={`p-4 mb-6 rounded flex flex-col items-center text-center ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-800 border border-green-300'}`}>
+                            <p className="font-bold text-lg mb-2">{message.text}</p>
+                            
+                            {/* QR Code renders exactly here now */}
+                            {qrCode && (
+                                <div className="mt-2 flex flex-col items-center">
+                                    {/* ADD THIS DIAGNOSTIC LINE */}
+                                    
+                                    
+                                    <div className="bg-white p-2 rounded shadow-sm">
+                                        <img src={qrCode} alt="Ticket QR Code" className="w-40 h-40" />
+                                    </div>
+                                    <p className="text-xs mt-2 text-green-900 font-semibold uppercase tracking-wide">
+                                        Take a screenshot of your ticket
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     )}
 
