@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
                 // Set the token in Axios headers for all requests
                 axios.defaults.headers.common['x-auth-token'] = token;
                 try {
-                    const res = await axios.get('http://localhost:5000/api/auth');
+                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth`);
                     setUser(res.data);
                 } catch (error) {
                     console.error("Token invalid or expired");
