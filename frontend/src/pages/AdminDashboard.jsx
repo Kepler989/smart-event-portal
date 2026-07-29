@@ -14,7 +14,7 @@ export default function AdminDashboard() {
     });
 
     const fetchEvents = async () => {
-        const res = await axios.get('http://localhost:5000/api/events');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`);
         setEvents(res.data);
     };
 
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     if (window.confirm("Are you sure you want to delete this event?")) {
         try {
             // Sends the DELETE request to our backend route
-            await axios.delete(`http://localhost:5000/api/events/${eventId}`);
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/events/${eventId}`);
             alert("Event deleted successfully!");
             fetchEvents(); // Refresh the table automatically
         } catch (err) {
@@ -53,7 +53,7 @@ const handleEditSubmit = async (e, eventId) => {
     e.preventDefault();
     try {
         // Make the PUT request to the backend route we created earlier
-        await axios.put(`http://localhost:5000/api/events/${eventId}`, editFormData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/events/${eventId}`, editFormData);
         alert("Event updated successfully!");
         setEditingEventId(null); // Close the editing mode
         fetchEvents();           // Refresh the table numbers
@@ -73,7 +73,7 @@ const handleEditSubmit = async (e, eventId) => {
         e.preventDefault();
         try {
             // Note: Axios automatically attaches the x-auth-token header here because of our AuthContext
-            await axios.post('http://localhost:5000/api/events', formData);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/events`, formData);
             setFormData({ title: '', description: '', date: '', location: '', capacity: '' });
             fetchEvents(); // Refresh table
         } catch (err) {
@@ -84,7 +84,7 @@ const handleEditSubmit = async (e, eventId) => {
     const handleExportCSV = async (eventId, eventTitle) => {
         try {
             // We must specify 'blob' so Axios knows it is receiving a file, not text
-            const res = await axios.get(`http://localhost:5000/api/export/events/${eventId}/csv`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${eventId}/csv`, {
                 responseType: 'blob'
             });
             
