@@ -15,7 +15,7 @@ export default function EventDetails() {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/events/${id}`);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${id}`);
                 setEvent(res.data);
                 setLoading(false);
             } catch (err) {
@@ -37,7 +37,7 @@ export default function EventDetails() {
         setQrCode(null); // Clear previous QR code if registering another person
 
         try {
-            const res = await axios.post('http://localhost:5000/api/registrations', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/registrations`, {
                 eventId: id,
                 ...formData
             });
