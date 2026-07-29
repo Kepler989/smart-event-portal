@@ -5,8 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 export default function Navbar() {
     const { token, logout } = useContext(AuthContext);
     const [isDarkMode, setIsDarkMode] = useState(false);
-
-    // Check local storage for theme preference on initial load
+ 
     useEffect(() => {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             setIsDarkMode(true);
@@ -32,19 +31,16 @@ export default function Navbar() {
         <nav className="bg-gray-100 dark:bg-gray-800 shadow-md transition-colors duration-300">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center py-4">
-                    
-                    {/* Logo / Brand */}
+                     
                     <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         SmartEvent
                     </Link>
-
-                    {/* Navigation Links & Controls */}
+ 
                     <div className="flex items-center space-x-6">
                         <Link to="/" className="text-gray-700 dark:text-gray-200 hover:text-blue-600">
                             Events
                         </Link>
-
-                        {/* Conditional Auth Links */}
+ 
                         {token ? (
                             <>
                                 <Link to="/admin" className="text-gray-700 dark:text-gray-200 hover:text-blue-600">
@@ -59,8 +55,7 @@ export default function Navbar() {
                                 Organizer Login
                             </Link>
                         )}
-
-                        {/* Dark Mode Toggle */}
+ 
                         <button 
                             onClick={toggleDarkMode} 
                             className="p-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none"

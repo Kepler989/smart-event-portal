@@ -8,8 +8,8 @@ export default function AdminDashboard() {
     const [formData, setFormData] = useState({
         title: '', description: '', date: '', location: '', capacity: ''
     });
-    const [editingEventId, setEditingEventId] = useState(null); // Track which row is being edited
-    const [editFormData, setEditFormData] = useState({          // Hold temporary edit inputs
+    const [editingEventId, setEditingEventId] = useState(null);  
+    const [editFormData, setEditFormData] = useState({       
         title: '', description: '', date: '', location: '', capacity: ''
     });
 
@@ -20,43 +20,38 @@ export default function AdminDashboard() {
 
     const handleDelete = async (eventId) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
-        try {
-            // Sends the DELETE request to our backend route
+        try { 
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/events/${eventId}`);
             alert("Event deleted successfully!");
-            fetchEvents(); // Refresh the table automatically
+            fetchEvents(); 
         } catch (err) {
             console.error("Error deleting event:", err);
             alert("Failed to delete event.");
         }
     }
-};
-// Triggered when the user clicks "Edit" on a row
+}; 
 const startEditing = (event) => {
     setEditingEventId(event._id);
     setEditFormData({
         title: event.title,
         description: event.description,
-        date: event.date.split('T')[0], // Formats database date to YYYY-MM-DD for the input field
+        date: event.date.split('T')[0], 
         location: event.location,
         capacity: event.capacity
     });
 };
-
-// Triggered when typing into the edit inputs
+ 
 const handleEditChange = (e) => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
 };
-
-// Triggered when clicking "Save"
+ 
 const handleEditSubmit = async (e, eventId) => {
     e.preventDefault();
-    try {
-        // Make the PUT request to the backend route we created earlier
+    try { 
         await axios.put(`${import.meta.env.VITE_API_URL}/api/events/${eventId}`, editFormData);
         alert("Event updated successfully!");
-        setEditingEventId(null); // Close the editing mode
-        fetchEvents();           // Refresh the table numbers
+        setEditingEventId(null);  
+        fetchEvents();            
     } catch (err) {
         console.error("Error updating event:", err);
         alert("Failed to update event.");
@@ -71,29 +66,25 @@ const handleEditSubmit = async (e, eventId) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            // Note: Axios automatically attaches the x-auth-token header here because of our AuthContext
+        try { 
             await axios.post(`${import.meta.env.VITE_API_URL}/api/events`, formData);
             setFormData({ title: '', description: '', date: '', location: '', capacity: '' });
-            fetchEvents(); // Refresh table
+            fetchEvents();  
         } catch (err) {
             console.error(err);
             alert("Failed to create event. Are you logged in?");
         }
     };
     const handleExportCSV = async (eventId, eventTitle) => {
-        try {
-            // We must specify 'blob' so Axios knows it is receiving a file, not text
+        try { 
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${eventId}/csv`, {
                 responseType: 'blob'
             });
-            
-            // Create a hidden link, click it to download the file, and remove it
+             
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            
-            // Clean up the title so it makes a good file name
+             
             const safeTitle = eventTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             link.setAttribute('download', `${safeTitle}_attendees.csv`);
             
@@ -112,8 +103,7 @@ const handleEditSubmit = async (e, eventId) => {
                 <h1 className="text-3xl font-bold">Admin Dashboard</h1>
                 <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
             </div>
-
-            {/* Create Event Form */}
+ 
             <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg mb-10">
                 <h2 className="text-xl font-semibold mb-4">Create New Event</h2>
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,8 +115,7 @@ const handleEditSubmit = async (e, eventId) => {
                     <button type="submit" className="md:col-span-2 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Publish Event</button>
                 </form>
             </div>
-
-            {/* Event Management Table */}
+ 
             <h2 className="text-xl font-semibold mb-4">Manage Events</h2>
             <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
                 <table className="min-w-full text-left border-collapse">
@@ -141,8 +130,7 @@ const handleEditSubmit = async (e, eventId) => {
                     <tbody>
                         {events.map(event => (
                             <tr key={event._id} className="border-b dark:border-gray-700">
-                                {editingEventId === event._id ? (
-                                    // --- EDITABLE ROW VIEW ---
+                                {editingEventId === event._id ? ( 
                                     <>
                                         <td className="p-2">
                                             <input type="text" name="title" value={editFormData.title} onChange={handleEditChange} className="w-full p-1 border rounded text-black text-sm" required />
@@ -169,8 +157,7 @@ const handleEditSubmit = async (e, eventId) => {
                                             </button>
                                         </td>
                                     </>
-                                ) : (
-                                    // --- STANDARD READ-ONLY ROW VIEW ---
+                                ) : ( 
                                     <>
                                         <td className="p-4 font-medium">{event.title}</td>
                                         <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>

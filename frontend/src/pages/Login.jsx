@@ -18,7 +18,7 @@ export default function Login() {
                 password
             });
             login(res.data.token);
-            navigate('/admin'); // Redirect to dashboard on success
+            navigate('/admin'); 
         } catch (err) {
             setError(err.response?.data?.msg || 'Login failed');
         }

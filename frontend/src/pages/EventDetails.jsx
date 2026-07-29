@@ -33,23 +33,21 @@ export default function EventDetails() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setMessage({ text: '', type: '' }); // Clear previous messages
-        setQrCode(null); // Clear previous QR code if registering another person
+        setMessage({ text: '', type: '' });  
+        setQrCode(null);  
 
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/registrations`, {
                 eventId: id,
                 ...formData
             });
-
-            // DEBUG LOG: Check your browser console to verify the data is here
+ 
             console.log("Server Response:", res.data);
 
             setMessage({ text: 'Successfully registered!', type: 'success' });
-            setQrCode(res.data.ticketQR); // Save the QR code from the backend
-            setFormData({ attendeeName: '', attendeeEmail: '' }); // Reset form
-            
-            // Update local event state to reflect new registration count
+            setQrCode(res.data.ticketQR);  
+            setFormData({ attendeeName: '', attendeeEmail: '' });  
+             
             setEvent({ ...event, registeredCount: event.registeredCount + 1 });
             
         } catch (err) {
@@ -71,8 +69,7 @@ export default function EventDetails() {
                 &larr; Back to Events
             </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column: Event Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> 
                 <div>
                     <h1 className="text-3xl font-bold mb-4">{event.title}</h1>
                     <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg">
@@ -88,20 +85,17 @@ export default function EventDetails() {
                         </p>
                     </div>
                 </div>
-
-                {/* Right Column: Registration Form */}
+ 
                 <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg border dark:border-gray-600">
                     <h2 className="text-2xl font-semibold mb-6">Register for this Event</h2>
-                    
-                    {/* The new, combined Message & QR Code Box */}
+                     
                     {message.text && (
                         <div className={`p-4 mb-6 rounded flex flex-col items-center text-center ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-800 border border-green-300'}`}>
                             <p className="font-bold text-lg mb-2">{message.text}</p>
-                            
-                            {/* QR Code renders exactly here now */}
+                             
                             {qrCode && (
                                 <div className="mt-2 flex flex-col items-center">
-                                    {/* ADD THIS DIAGNOSTIC LINE */}
+                                     
                                     
                                     
                                     <div className="bg-white p-2 rounded shadow-sm">

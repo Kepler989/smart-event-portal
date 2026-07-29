@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
-
-// @route   POST api/events
-// @desc    Create a new event
+ 
 router.post('/', async (req, res) => {
     try {
         const { title, description, date, location, capacity } = req.body;
@@ -13,8 +11,7 @@ router.post('/', async (req, res) => {
             description,
             date,
             location,
-            capacity
-            // organizer: req.user.id // Will be re-enabled once Auth middleware is added
+            capacity 
         });
 
         const event = await newEvent.save();
@@ -24,9 +21,7 @@ router.post('/', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @route   GET api/events
-// @desc    Get all events (for Event Discovery page)
+ 
 router.get('/', async (req, res) => {
     try {
         const events = await Event.find().sort({ date: 1 });
@@ -36,9 +31,7 @@ router.get('/', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @route   GET api/events/:id
-// @desc    Get event by ID
+ 
 router.get('/:id', async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
@@ -54,17 +47,14 @@ router.get('/:id', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @route   PUT api/events/:id
-// @desc    Update an event
+ 
 router.put('/:id', async (req, res) => {
     try {
         const { title, description, date, location, capacity } = req.body;
         
         let event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ msg: 'Event not found' });
-
-        // Update fields if provided
+ 
         if (title) event.title = title;
         if (description) event.description = description;
         if (date) event.date = date;
@@ -78,9 +68,7 @@ router.put('/:id', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @route   DELETE api/events/:id
-// @desc    Delete an event
+ 
 router.delete('/:id', async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);

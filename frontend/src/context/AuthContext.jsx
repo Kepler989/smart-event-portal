@@ -10,8 +10,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const loadUser = async () => {
-            if (token) {
-                // Set the token in Axios headers for all requests
+            if (token) { 
                 axios.defaults.headers.common['x-auth-token'] = token;
                 try {
                     const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth`);

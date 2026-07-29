@@ -5,7 +5,7 @@ import axios from 'axios';
 export default function EventDiscovery() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate(); // <-- Added navigation hook
+    const navigate = useNavigate();  
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -39,8 +39,7 @@ export default function EventDiscovery() {
                                 <p><strong>Availability:</strong> {event.capacity - event.registeredCount} spots left</p>
                             </div>
                         </div>
-
-                        {/* This button now redirects to the Event Details page! */}
+ 
                         <button 
                             onClick={() => navigate(`/events/${event._id}`)}
                             className={`w-full p-2 rounded text-white font-semibold mt-4 transition-colors ${
